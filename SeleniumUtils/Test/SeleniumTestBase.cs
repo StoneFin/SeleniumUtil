@@ -37,7 +37,6 @@ namespace StoneFin.SeleniumUtils.Test
 
     protected static string BatchID = "";
 
-    //todo, mabe it would be better if this had a dependency on SeleniumPool ??
     public SeleniumTestBase(LogRepoOptions logOptions,SeleniumPoolOptions poolOptions)
     {
       this._repoOptions = logOptions;
@@ -48,6 +47,7 @@ namespace StoneFin.SeleniumUtils.Test
       this._repoOptions = logOptions;
       this._seleniumPool = pool;
     }
+
     /// <summary>
     /// Sets the BatchID to the first 10 characters of a guid.
     /// </summary>
@@ -56,18 +56,9 @@ namespace StoneFin.SeleniumUtils.Test
       BatchID = Guid.NewGuid().ToString("n").Substring(0, 10);
     }
 
-    private string _basePath = "/";
-
-    public string BasePath
-    {
-      get { return _basePath; }
-      set { _basePath = value; }
-    }
-
     private string _baseURL;
-
     /// <summary>
-    /// Used for logging and navigation.
+    /// Used for creating absolute urls out from relative urls passed into navigate and verify
     /// </summary>
     public string BaseURL
     {
@@ -75,7 +66,9 @@ namespace StoneFin.SeleniumUtils.Test
       set { _baseURL = value; }
     }
 
-
+    /// <summary>
+    /// does nothing.
+    /// </summary>
     public static void ClassCleanup()
     {
 
@@ -84,6 +77,10 @@ namespace StoneFin.SeleniumUtils.Test
     private System.Diagnostics.Stopwatch _stopwatch;
     private LogRepoOptions _repoOptions;
     private SeleniumPool _seleniumPool;
+
+    /// <summary>
+    /// sets up the browser, clears out test info from  a previous test and resets the timer.
+    /// </summary>
     public virtual void TestInitialize()
     {
       _stopwatch = new System.Diagnostics.Stopwatch();
@@ -92,6 +89,10 @@ namespace StoneFin.SeleniumUtils.Test
       _stopwatch.Reset();
       _stopwatch.Start();
     }
+
+    /// <summary>
+    /// Saves the test results to mongo, disposes of the browser instance.
+    /// </summary>
     public virtual void TestCleanup()
     {
       _stopwatch.Stop();
@@ -119,6 +120,7 @@ namespace StoneFin.SeleniumUtils.Test
       var dateRan = DateTime.Now;
       foreach (var tr in theResults)
       {
+        //todo save the unit test timing we have as a parameter! Didn't mean to ignore that...
         tr.TestResults = (int)TestContext.CurrentTestOutcome;
         tr.TestResultStr = TestContext.CurrentTestOutcome.ToString();
         tr.FullyQualifiedTestClassName = TestContext.FullyQualifiedTestClassName;
