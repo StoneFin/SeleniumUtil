@@ -1,0 +1,46 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IList<IntegrationTestViewer.Models.TestBatch>>
+<table class="table table-striped table-hover table-condensed">
+  <tr>
+    <th>
+      Batch ID
+    </th>
+    <th>
+      Batch Date
+    </th>
+    <th>
+      Total Tests
+    </th>
+    <th>
+     Total Passes
+    </th>
+    <th>
+      Total Failures
+    </th>
+    <th>
+
+    </th>
+  </tr>
+
+  @foreach (var item in Model)
+  {
+    <tr class="@(item.TotalFailures > 0 ? "warning" : "")">
+      <td>
+        @item.BatchID
+      </td>
+      <td>
+        @item.BatchDate
+      </td>
+      <td>
+        @item.TotalTests
+      </td>
+      <td>
+        @item.TotalPasses
+      </td>
+      <td>
+        @item.TotalFailures
+      </td>
+      <td>
+        <a href="~/batch/@(item.BatchID)">Details</a>
+      </td>
+    </tr>
+  }

@@ -1,0 +1,93 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IList<IntegrationTestViewer.Models.TestResult>>
+@{
+  int truncateLength = 45;
+  Func<string, int, string> Truncate = (string value, int maxChars) =>
+  {
+    if (value == null)
+      return "";
+    return value.Length <= maxChars ? value : value.Substring(0, maxChars) + " ..";
+  };
+}
+<table class="table table-striped" style="text-align:left">
+  <tr>
+    <th>Test Name</th>
+    <th>Navigation Success</th>
+    <th>Status</th>
+    <th>URL Tested</th>
+    <th>Elapsed</th>
+    <th>Source</th>
+    <th>Screen</th>
+  </tr>
+  @foreach (var batch in Model.GroupBy(x => x.TestName))
+  {
+    string rowClass = batch.All(x=>x.TestResultStr == "Passed") ? "" : "warning ";
+    foreach (var item in batch)
+    {
+      rowClass += item.NavigationSuccessful == true ? "" : "danger";
+      
+      <tr class="@rowClass">
+        <td>@item.TestName</td>
+        <td>@item.NavigationSuccessful</td>
+        <td>@item.TestResultStr</td>
+        <td>
+          <strong>Tested</strong>
+          <a href="@(item.UriTested.ToString())" title="@item.UriTested.ToString()">@Truncate(item.UriTested.ToString(), truncateLength)</a><br />
+          <strong>Actual</strong>
+          <a href="@(item.ActualURL)" title="@item.ActualURL">@(Truncate(item.ActualURL, truncateLength))</a><br />
+          <strong>Expected</strong>
+          <a href="@(item.ExpectedURL)" title="@item.ExpectedURL">@(Truncate(item.ExpectedURL, truncateLength))</a><br />
+        </td>
+        <td>@item.Timing.TotalMilliseconds (ms)</td>
+        <td>
+          @{
+      var tmpID = Guid.NewGuid().ToString("n");
+          }
+          <a class="btn btn-xs" data-toggle="modal" data-target="#@(tmpID)">view page source</a>
+          <div class="modal fade" id="@tmpID">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title">source of <a href="@(item.ActualURL)" title="@item.ActualURL">@item.ActualURL.(15)</a></h4>
+                </div>
+                <div class="modal-body">
+                  <pre>
+@item.PageSource
+</pre>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+        </td>
+        <td>
+          @if (item.ScreenShot != null)
+          {
+          <!-- to specify a href AND a modal, you have to say data-remote=false, otherwise bootstrap will automagically load the href as the modal content. -->
+            <a href="~/screenshots/@(item.Id.ToString())" data-toggle="modal" data-target="#@(tmpID)-image" data-remote="false">
+              <img width=160 height=160 src="~/screenshots/@(item.Id.ToString())" />
+            </a>
+            <div class="modal fade" id="@(tmpID)-image">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">screenshot of @item.ActualURL</h4>
+                  </div>
+                  <div class="modal-body">
+                    <a href="~/screenshots/@(item.Id.ToString())">
+                      <img src="~/screenshots/@(item.Id.ToString())" title="derp" alt="derpity derp" style="border:4px solid #000;" />
+                    </a>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+          }
+          else
+          {
+            <span>no image</span>
+          }
+        </td>
+
+      </tr>
+    }
+  }
