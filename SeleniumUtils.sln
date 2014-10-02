@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumUtils", "SeleniumUt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTestViewer", "IntegrationTestViewer\IntegrationTestViewer.csproj", "{B4F9C525-5C56-440E-B4C2-972A33D7C8CD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B6E82D9F-FB99-4BDA-9A05-2D6D7D75480E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

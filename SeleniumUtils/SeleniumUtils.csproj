@@ -30,6 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\packages\mongocsharpdriver.1.9.2\lib\net35\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\packages\mongocsharpdriver.1.9.2\lib\net35\MongoDB.Driver.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -53,6 +60,9 @@
     <Compile Include="Pool\SeleniumPoolOptions.cs" />
     <Compile Include="Test\ITestBatch.cs" />
     <Compile Include="Test\ITestResult.cs" />
+    <Compile Include="Test\LogRepoOptions.cs" />
+    <Compile Include="Test\SeleniumTestBase.cs" />
+    <Compile Include="Test\TestResult.cs" />
     <Compile Include="WebDriverExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
