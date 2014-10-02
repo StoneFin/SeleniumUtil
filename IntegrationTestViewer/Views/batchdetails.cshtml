@@ -18,7 +18,8 @@
     <th>Source</th>
     <th>Screen</th>
   </tr>
-  @foreach (var batch in Model.GroupBy(x => x.TestName))
+  @* put the failed tests at the top. *@
+  @foreach (var batch in Model.GroupBy(x => x.TestName).OrderBy(x=>x.First().TestResults))
   {
     string rowClass = batch.All(x=>x.TestResultStr == "Passed") ? "" : "warning ";
     foreach (var item in batch)
