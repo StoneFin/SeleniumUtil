@@ -31,38 +31,44 @@ namespace StoneFin.SeleniumUtils.Test
     }
 
     protected static List<TestResult> TestInfos = new List<TestResult>();
+    protected static List<string> TestedURLS = new List<string>();
 
     protected OpenQA.Selenium.Remote.RemoteWebDriver Browser { get { return _browser.Browser; } }
     private DisposableBrowser _browser;
 
     protected static string BatchID = "";
 
-    //todo, mabe it would be better if this had a dependency on SeleniumPool ??
-    public SeleniumTestBase(LogRepoOptions logOptions,SeleniumPoolOptions poolOptions)
-    {
-      this._repoOptions = logOptions;
-      this._seleniumPool = SeleniumPoolFactory.GetPool(poolOptions);
-    }
-    public SeleniumTestBase(LogRepoOptions logOptions, SeleniumPool pool)
-    {
-      this._repoOptions = logOptions;
-      this._seleniumPool = pool;
-    }
     /// <summary>
     /// Sets the BatchID to the first 10 characters of a guid.
     /// </summary>
-    public static void ClassInitialize(TestContext ctx)
+    public static void ClassInitialize(SeleniumPoolOptions poolOptions,LogRepoOptions repoOptions)
     {
+      RepoOptions = repoOptions;
+      SeleniumPoolInst = SeleniumPoolFactory.GetPool(poolOptions);
+      canDisposeOfPool = true;
       BatchID = Guid.NewGuid().ToString("n").Substring(0, 10);
     }
 
-    private string _basePath = "/";
-
-    public string BasePath
+    /// <summary>
+    /// Sets the BatchID to the first 10 characters of a guid.
+    /// </summary>
+    public static void ClassInitialize(SeleniumPool pool, LogRepoOptions repoOptions)
     {
-      get { return _basePath; }
-      set { _basePath = value; }
+      RepoOptions = repoOptions;
+      SeleniumPoolInst = pool;
+      canDisposeOfPool = false;
+      BatchID = Guid.NewGuid().ToString("n").Substring(0, 10);
     }
+
+    /// <summary>
+    /// If possible, disposes of the seleniumPool, freeing up resources on the selenium server.
+    /// </summary>
+    public static void ClassCleanup()
+    {
+      if (canDisposeOfPool)
+        SeleniumPoolInst.Dispose();
+    }
+
 
     private string _baseURL;
 
@@ -75,19 +81,15 @@ namespace StoneFin.SeleniumUtils.Test
       set { _baseURL = value; }
     }
 
-
-    public static void ClassCleanup()
-    {
-
-    }
-
     private System.Diagnostics.Stopwatch _stopwatch;
-    private LogRepoOptions _repoOptions;
-    private SeleniumPool _seleniumPool;
+    protected static LogRepoOptions RepoOptions;
+    protected static SeleniumPool SeleniumPoolInst;
+    private static bool canDisposeOfPool = true;
+
     public virtual void TestInitialize()
     {
       _stopwatch = new System.Diagnostics.Stopwatch();
-      _browser = this._seleniumPool.Aquire();
+      _browser = SeleniumPoolInst.Aquire();
       TestInfos.Clear();
       _stopwatch.Reset();
       _stopwatch.Start();
@@ -105,16 +107,16 @@ namespace StoneFin.SeleniumUtils.Test
         throw;
       }
       this._browser.Dispose();
+      TestedURLS.AddRange(TestInfos.Select(x => x.UriTested));
       TestInfos.Clear();
     }
 
     private void SaveTestInfo(TimeSpan timeSpan)
     {
-      var connectionString = "mongodb://192.168.17.75";
-      var client = new MongoClient(connectionString);
+      var client = new MongoClient(RepoOptions.connectionString);
       var server = client.GetServer();
-      var testDB = server.GetDatabase("seleniumTests");
-      var testCol = testDB.GetCollection("digiwidgets");
+      var testDB = server.GetDatabase(RepoOptions.dbName);
+      var testCol = testDB.GetCollection(RepoOptions.collectionName);
       var theResults = TestInfos.ToList();
       var dateRan = DateTime.Now;
       foreach (var tr in theResults)

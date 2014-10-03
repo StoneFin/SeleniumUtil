@@ -45,9 +45,11 @@ namespace StoneFin.SeleniumUtils.Pool
     public DisposableBrowser Aquire()
     {
       var first = _browsers.FirstOrDefault(x => x.InUse == false);
-      first.InUse = true;
       if (first != null)
       {
+        //so it can't get snagged up.
+        //really, this whole section should probably lock on the list...
+        first.InUse = true;
         //ping it, if it throws an exception recreate it.
         try
         {
@@ -79,9 +81,9 @@ namespace StoneFin.SeleniumUtils.Pool
         //they were already in use, add another one.
         first = new IntDisposableBrowser(getNewSelenium(this._desiredCapabilities));
         //mark it as in use before we add it to the list!
+        first.InUse = true;
         _browsers.Add(first);
       }
-
       return first.Browser;
     }
     private RemoteWebDriver getNewSelenium(DesiredCapabilities desiredCapabilities)
