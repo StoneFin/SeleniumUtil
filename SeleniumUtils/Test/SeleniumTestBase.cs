@@ -68,12 +68,9 @@ namespace StoneFin.SeleniumUtils.Test
       if (canDisposeOfPool)
         SeleniumPoolInst.Dispose();
     }
-
-
     private string _baseURL;
-
     /// <summary>
-    /// Used for logging and navigation.
+    /// Used for creating absolute urls out from relative urls passed into navigate and verify
     /// </summary>
     public string BaseURL
     {
@@ -86,6 +83,9 @@ namespace StoneFin.SeleniumUtils.Test
     protected static SeleniumPool SeleniumPoolInst;
     private static bool canDisposeOfPool = true;
 
+    /// <summary>
+    /// sets up the browser, clears out test info from  a previous test and resets the timer.
+    /// </summary>
     public virtual void TestInitialize()
     {
       _stopwatch = new System.Diagnostics.Stopwatch();
@@ -94,6 +94,10 @@ namespace StoneFin.SeleniumUtils.Test
       _stopwatch.Reset();
       _stopwatch.Start();
     }
+
+    /// <summary>
+    /// Saves the test results to mongo, disposes of the browser instance.
+    /// </summary>
     public virtual void TestCleanup()
     {
       _stopwatch.Stop();
@@ -121,6 +125,7 @@ namespace StoneFin.SeleniumUtils.Test
       var dateRan = DateTime.Now;
       foreach (var tr in theResults)
       {
+        //todo save the unit test timing we have as a parameter! Didn't mean to ignore that...
         tr.TestResults = (int)TestContext.CurrentTestOutcome;
         tr.TestResultStr = TestContext.CurrentTestOutcome.ToString();
         tr.FullyQualifiedTestClassName = TestContext.FullyQualifiedTestClassName;
