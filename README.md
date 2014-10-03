@@ -212,14 +212,14 @@ using StoneFin.SeleniumUtils.Test;
     }
     protected bool VerifyLoggedOut()
     {
-      if (Browser.Manage().Cookies.GetCookieNamed("MyApp*)efdaew$%s") == null)
+      if (Browser.Manage().Cookies.GetCookieNamed(MyApp.Membership.MembershipHelper.GetAuthCookieName()) == null)
         return true;
       this.ClearCookies();
       return false;
     }
     protected bool VerifyLoggedIn()
     {
-      if (Browser.Manage().Cookies.GetCookieNamed("MyApp*)efdaew$%s") == null)
+      if (Browser.Manage().Cookies.GetCookieNamed(MyApp.Membership.MembershipHelper.GetAuthCookieName()) == null)
       {
         var cookieString = MyApp.Membership.MembershipHelper.PrepareMembershipInfo(_cookieInfo);
         Browser.Manage().Cookies.AddCookie(
