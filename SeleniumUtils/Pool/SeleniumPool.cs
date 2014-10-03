@@ -36,7 +36,7 @@ namespace StoneFin.SeleniumUtils.Pool
 #if !DEBUG
       for (int i = 0; i < MINSESSIONS; i++)
       {
-        var inst = getNewSelenium();
+        var inst = getNewSelenium(this._desiredCapabilities);
         _browsers.Add(new IntDisposableBrowser(inst));
       }
 #endif
