@@ -8,12 +8,15 @@
     body {
       text-align: center;
     }
+    p,h1,h2,h3,h4,h5,h6,td,legend {
+      text-align:left;
+    }
   </style>
-  @RenderSection("head", false);
+  @RenderSection("head", false)
 </head>
 <body>
   <div class="container">
-    @RenderBody();
+    @RenderBody()
   </div>
   <script src="~/Scripts/jquery-1.9.0.js"></script>
   <script src="~/Scripts/bootstrap.js"></script>

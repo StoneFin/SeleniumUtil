@@ -1,27 +1,51 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IList<IntegrationTestViewer.Models.TestBatch>>
-<table class="table table-striped table-hover table-condensed">
-  <tr>
-    <th>
-      Batch ID
-    </th>
-    <th>
-      Batch Date
-    </th>
-    <th>
-      Total Tests
-    </th>
-    <th>
-     Total Passes
-    </th>
-    <th>
-      Total Failures
-    </th>
-    <th>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<IntegrationTestViewer.Models.PagedResult<StoneFin.SeleniumUtils.Test.ITestBatch>>
+@{double totalPages = System.Math.Ceiling(Model.TotalMatches / (double)Model.PageArgs.ResultsPerPage);}
+<div class="page" style="text-align:right;">
+  @if (Model.PageArgs.Index > 0)
+  {
+    <a href="/page/1/results/@(Model.PageArgs.ResultsPerPage)">Beginning</a>
+    <a href="/page/@(Model.PageArgs.Index)/results/@(Model.PageArgs.ResultsPerPage)">Previous</a>
+  }
+  
+  Page @(Model.PageArgs.Index + 1d) of <a href="/page/@(totalPages)/results/@(Model.PageArgs.ResultsPerPage)">@totalPages</a>
+  (@Model.TotalMatches total batches, <a href="/page/@(Model.PageArgs.Index+1)/results/@Model.PageArgs.ResultsPerPage">@Model.PageArgs.ResultsPerPage</a> per page)
+  @if (Model.PageArgs.Index != totalPages - 1)
+  {
+    <a href="/page/@(Model.PageArgs.Index+2)/results/@(Model.PageArgs.ResultsPerPage)">Next</a>
+    <a href="/page/@totalPages/results/@(Model.PageArgs.ResultsPerPage)">End</a>
+  }
+</div>
 
-    </th>
-  </tr>
+@foreach (var dayGroups in Model.GroupBy(x => new DateTime(x.BatchDate.Year, x.BatchDate.Month, x.BatchDate.Day)))
+{
+  <fieldset>
+  @{var isToday = (dayGroups.Key.Year == DateTime.Now.Year && dayGroups.Key.DayOfYear == DateTime.Now.DayOfYear);}
+  
+  <legend>@(isToday ? "Today" : dayGroups.Key.DayOfWeek.ToString() + ", " + dayGroups.Key.ToShortDateString()) (@dayGroups.Count())</legend>
+  
+  <table class="table table-striped table-hover table-condensed">
+    <tr>
+      <th>
+        Batch ID
+      </th>
+      <th>
+        Batch Date
+      </th>
+      <th>
+        Total Tests
+      </th>
+      <th>
+        Total Passes
+      </th>
+      <th>
+        Total Failures
+      </th>
+      <th>
 
-  @foreach (var item in Model)
+      </th>
+    </tr>
+
+  @foreach (var item in dayGroups)
   {
     <tr class="@(item.TotalFailures > 0 ? "warning" : "")">
       <td>
@@ -44,3 +68,6 @@
       </td>
     </tr>
   }
+    </table>
+  </fieldset>
+}

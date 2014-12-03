@@ -8,6 +8,9 @@
     return value.Length <= maxChars ? value : value.Substring(0, maxChars) + " ..";
   };
 }
+<h3>Batch: <em>@Model.First().BatchID</em></h3>
+<h5>Namespace: <em>@Model.First().FullyQualifiedTestClassName</em></h5>
+<h5>Date: <em>@Model.First().DateRan.ToLongDateString()</em></h5>
 <table class="table table-striped" style="text-align:left">
   <tr>
     <th>Test Name</th>
